@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { createCategory, deleteCategory } from "@/app/actions";
 import { Trash2, Plus } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function CategoriesPage() {
   const categories = await prisma.category.findMany({
     orderBy: { name: "asc" },

@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import ProductChart from "@/components/products-chart";
 import { Package, AlertTriangle, TrendingUp, DollarSign } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const [totalProducts, lowStockProducts, activeOrders, completedOrderItems] = await Promise.all([
     prisma.product.count(),

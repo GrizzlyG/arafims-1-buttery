@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import InventoryList from "@/components/inventory-list";
 
+export const dynamic = "force-dynamic";
+
 export default async function InventoryPage() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
