@@ -1,23 +1,32 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { randomUUID } from "crypto";
+
 const prisma = new PrismaClient();
 
 async function main() {
-  const demoUserId = "133767f0-768d-4338-a612-50c8dc722b84";
+  const email = "admin@arafims.com";
+  // Generate a more secure, random password
+  const password = randomUUID().replaceAll("-", "").slice(0, 16);
 
-  // Create sample products
-  await prisma.product.createMany({
-    data: Array.from({ length: 25 }).map((_, i) => ({
-      userId: demoUserId,
-      name: `Product ${i + 1}`,
-      price: (Math.random() * 90 + 10).toFixed(2),
-      quantity: Math.floor(Math.random() * 20),
-      lowStockAt: 5,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * (i * 5)),
-    })),
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: {
+      password: hashedPassword,
+      role: "admin",
+    },
+    create: {
+      email,
+      name: "Admin",
+      password: hashedPassword,
+      role: "admin",
+    },
   });
 
-  console.log("Seed data created successfully!");
-  console.log(`Created 25 products for user ID: ${demoUserId}`);
+  console.log(`Admin user created/updated: ${user.email}.`);
+  console.log(`IMPORTANT: The password for this user is: ${password}`);
 }
 
 main()
