@@ -5,7 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { handleSignOut } from "@/app/actions";
 
-export default function Sidebar({ user }: { user: any }) {
+type UserSession = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+};
+
+export default function Sidebar({ user }: { user: UserSession }) {
   const currentPath = usePathname();
   const navigation = [
     { name: "Dashboard", href: "/admin/dashboard", icon: BarChart3 },

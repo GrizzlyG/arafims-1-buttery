@@ -123,6 +123,7 @@ export async function getOrderByToken(token: string) {
 
     return { success: true, order };
   } catch (error) {
+    console.error("Failed to get order by token:", error);
     return { success: false, message: "Failed to fetch order" };
   }
 }
@@ -166,7 +167,8 @@ export async function deleteProduct(id: string) {
     revalidatePath("/admin/inventory");
     revalidatePath("/shop");
     return { success: true };
-  } catch (e) {
+  } catch (error) {
+    console.error("Failed to delete product:", error);
     return { success: false, message: "Failed to delete product" };
   }
 }
@@ -181,7 +183,8 @@ export async function createCategory(formData: FormData) {
     revalidatePath("/admin/categories");
     revalidatePath("/admin/add-product");
     return { success: true };
-  } catch (e) {
+  } catch (error) {
+    console.error("Failed to create category:", error);
     return { success: false, message: "Failed to create category" };
   }
 }
@@ -195,7 +198,8 @@ export async function deleteCategory(id: string) {
     revalidatePath("/admin/categories");
     revalidatePath("/admin/add-product");
     return { success: true };
-  } catch (e) {
+  } catch (error) {
+    console.error("Failed to delete category:", error);
     return { success: false, message: "Failed to delete category" };
   }
 }
