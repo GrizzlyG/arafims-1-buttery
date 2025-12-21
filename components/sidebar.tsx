@@ -1,24 +1,28 @@
-import { UserButton } from "@stackframe/stack";
-import { BarChart3, Package, Plus, Settings } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-export default function Sidebar({
-  currentPath = "/dashboard",
-}: {
-  currentPath: string;
-}) {
+import { BarChart3, Package, Plus, Settings, ShoppingCart, Store, Calculator, Tags, LogOut, User } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { handleSignOut } from "@/app/actions";
+
+export default function Sidebar({ user }: { user: any }) {
+  const currentPath = usePathname();
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
-    { name: "Inventory", href: "/inventory", icon: Package },
-    { name: "Add Product", href: "/add-product", icon: Plus },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Dashboard", href: "/admin/dashboard", icon: BarChart3 },
+    { name: "Shop", href: "/shop", icon: Store },
+    { name: "Inventory", href: "/admin/inventory", icon: Package },
+    { name: "Add Product", href: "/admin/add-product", icon: Plus },
+    { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+    { name: "Categories", href: "/admin/categories", icon: Tags },
+    { name: "Calculator", href: "/admin/calculator", icon: Calculator },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
   return (
-    <div className="fixed left-0 top-0 bg-gray-900 text-white w-64 min-h-screen p-6 z-10">
+    <div className="fixed left-0 top-0 bg-gray-900 text-white w-64 min-h-screen p-6 z-10 print:hidden">
       <div className="mb-8">
         <div className="flex items-center space-x-2 mb-4">
           <BarChart3 className="w-7 h-7" />
-          <span className="text-lg font-semibold">Inventory App</span>
+          <span className="text-lg font-semibold">Arafims One Buttery</span>
         </div>
       </div>
 
@@ -48,7 +52,18 @@ export default function Sidebar({
 
       <div className="absolute bottom-0 left-0 right-0 p-6 borter-t border-gray-700">
         <div className="flex items-center justify-between">
-          <UserButton showUserInfo />
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+              {user?.image ? <img src={user.image} alt="User" className="w-8 h-8 rounded-full" /> : <User className="w-4 h-4" />}
+            </div>
+            <div className="text-sm">
+              <p className="font-medium text-white">{user?.name || "Admin"}</p>
+              <p className="text-xs text-gray-400 truncate max-w-[100px]">{user?.email}</p>
+            </div>
+          </div>
+          <button onClick={() => handleSignOut()} className="text-gray-400 hover:text-white">
+            <LogOut className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>

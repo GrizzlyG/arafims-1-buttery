@@ -1,38 +1,33 @@
 import Link from "next/link";
-import { stackServerApp } from "@/stack/server";
-import { redirect } from "next/navigation";
+import { Store, ShieldCheck } from "lucide-react";
 
-export default async function Home() {
-  const user = await stackServerApp.getUser();
-  if (user) {
-    redirect("/dashboard");
-  }
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Inventory Management
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Streamline your inventory tracking with our powerful, easy-to-use
-            management system. Track products, monitor stock levels, and gain
-            valuable insights.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Link
-              href="/sign-in"
-              className="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="#"
-              className="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold border-2 border-purple-600 hover:bg-purple-50 transition-colors"
-            >
-              Learn More
-            </Link>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white flex flex-col items-center justify-center p-4">
+      <div className="text-center max-w-2xl">
+        <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          Arafims One Buttery
+        </h1>
+        <p className="text-xl text-gray-600 mb-12">
+          Premium inventory management and customer shopping experience.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/shop"
+            className="flex items-center justify-center gap-2 bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl"
+          >
+            <Store className="w-5 h-5" />
+            Visit Shop
+          </Link>
+
+          <Link
+            href="/admin/dashboard"
+            className="flex items-center justify-center gap-2 bg-white text-gray-800 px-8 py-4 rounded-xl font-semibold border border-gray-200 hover:bg-gray-50 transition-all"
+          >
+            <ShieldCheck className="w-5 h-5" />
+            Admin Access
+          </Link>
         </div>
       </div>
     </div>

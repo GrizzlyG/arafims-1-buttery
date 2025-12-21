@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, Package, Plus, Settings } from "lucide-react";
-import { UserButton } from "@stackframe/stack";
 
 // Skeleton component for loading states
 function Skeleton({ className = "" }: { className?: string }) {
@@ -15,18 +14,18 @@ function Skeleton({ className = "" }: { className?: string }) {
 // Sidebar component for loading state
 function LoadingSidebar() {
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
-    { name: "Inventory", href: "/inventory", icon: Package },
-    { name: "Add Product", href: "/add-product", icon: Plus },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Dashboard", href: "/admin/dashboard", icon: BarChart3 },
+    { name: "Inventory", href: "/admin/inventory", icon: Package },
+    { name: "Add Product", href: "/admin/add-product", icon: Plus },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
   return (
     <div className="fixed left-0 top-0 bg-gray-900 text-white w-64 min-h-screen p-6 z-10">
       <div className="mb-8">
         <div className="flex items-center space-x-2 mb-4">
-          <BarChart3 className="w-7 h-7" />
-          <span className="text-lg font-semibold">Inventory App</span>
+          <Skeleton className="w-7 h-7" />
+          <Skeleton className="h-6 w-32" />
         </div>
       </div>
 
@@ -51,12 +50,12 @@ function LoadingSidebar() {
 
       <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-700">
         <div className="flex items-center justify-between">
-          <div className="flex-1 min-w-0">
-            <Skeleton className="h-4 w-16 mb-1" />
-            <Skeleton className="h-3 w-24" />
-          </div>
-          <div className="ml-3">
-            <UserButton />
+          <div className="flex items-center gap-2">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <div className="text-sm">
+              <Skeleton className="h-4 w-16 mb-1" />
+              <Skeleton className="h-3 w-24" />
+            </div>
           </div>
         </div>
       </div>
@@ -154,8 +153,8 @@ function MainContentSkeleton({
 export default function Loading() {
   const pathname = usePathname();
 
-  // Don't show sidebar on public routes
-  const showSidebar = !["/", "/sign-in", "/sign-up"].includes(pathname);
+  // Only show sidebar on admin routes
+  const showSidebar = pathname?.startsWith("/admin");
 
   return (
     <div className="min-h-screen bg-gray-50">
