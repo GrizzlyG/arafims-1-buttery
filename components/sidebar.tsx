@@ -1,6 +1,7 @@
 "use client";
 
 import { BarChart3, Package, Plus, Settings, ShoppingCart, Store, Calculator, Tags, LogOut, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { handleSignOut } from "@/app/actions";
@@ -59,8 +60,8 @@ export default function Sidebar({ user }: { user: UserSession }) {
       <div className="absolute bottom-0 left-0 right-0 p-6 borter-t border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-              {user?.image ? <img src={user.image} alt="User" className="w-8 h-8 rounded-full" /> : <User className="w-4 h-4" />}
+            <div className="relative w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+              {user?.image ? <Image src={user.image} alt={user.name || 'User avatar'} fill className="rounded-full" /> : <User className="w-4 h-4" />}
             </div>
             <div className="text-sm">
               <p className="font-medium text-white">{user?.name || "Admin"}</p>
