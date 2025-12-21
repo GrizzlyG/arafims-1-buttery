@@ -130,13 +130,14 @@ export async function getOrderByToken(token: string) {
 
 export async function createProduct(formData: FormData) {
   const session = await auth();
-  if (!session?.user) return { success: false, message: "Unauthorized" };
+  if (!session?.user?.id) return { success: false, message: "Unauthorized" };
 
   const name = formData.get("name") as string;
   const price = formData.get("price") as string;
   const costPrice = formData.get("costPrice") as string;
   const quantity = parseInt(formData.get("quantity") as string);
   const categoryId = formData.get("categoryId") as string;
+  const userId = session.user.id;
 
   try {
     await prisma.product.create({
@@ -146,7 +147,7 @@ export async function createProduct(formData: FormData) {
         costPrice,
         quantity,
         categoryId: categoryId || null,
-        userId: session.user.id || "unknown",
+        userId,
       },
     });
     revalidatePath("/admin/inventory");
