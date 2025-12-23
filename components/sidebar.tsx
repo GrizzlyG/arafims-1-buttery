@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, Package, Plus, Settings, ShoppingCart, Store, Calculator, Tags, LogOut, User } from "lucide-react";
+import { BarChart3, Package, Plus, Settings, ShoppingCart, Store, Calculator, Tags, LogOut, User, Zap } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,6 +20,7 @@ export default function Sidebar({ user }: { user: UserSession }) {
     { name: "Inventory", href: "/admin/inventory", icon: Package },
     { name: "Add Product", href: "/admin/add-product", icon: Plus },
     { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+    { name: "Quick Shops", href: "/admin/quick-shops", icon: Zap },
     { name: "Categories", href: "/admin/categories", icon: Tags },
     { name: "Calculator", href: "/admin/calculator", icon: Calculator },
     { name: "Settings", href: "/admin/settings", icon: Settings },

@@ -1,7 +1,11 @@
 import { signIn } from "@/auth";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, AlertCircle } from "lucide-react";
+import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function SignInPage() {
+export default async function SignInPage(props: { searchParams: Promise<{ error?: string }> }) {
+  const searchParams = await props.searchParams;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-white">
       <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
@@ -13,11 +17,29 @@ export default function SignInPage() {
           <p className="text-gray-500 mt-2">Welcome back to your shop</p>
         </div>
 
+        {searchParams?.error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6 flex items-center gap-2 text-sm">
+            <AlertCircle className="w-4 h-4" />
+            <p>Invalid email or password. Please try again.</p>
+          </div>
+        )}
+
         <div className="space-y-4">
           <form
             action={async (formData) => {
               "use server";
-              await signIn("credentials", formData);
+              try {
+                await signIn("credentials", {
+                  email: formData.get("email"),
+                  password: formData.get("password"),
+                  redirectTo: "/admin/dashboard",
+                });
+              } catch (error) {
+                if (error instanceof AuthError) {
+                  redirect(`/sign-in?error=${error.type}`);
+                }
+                throw error;
+              }
             }}
             className="space-y-4"
           >

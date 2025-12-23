@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import ProductChart from "@/components/products-chart";
-import { Package, AlertTriangle, TrendingUp, DollarSign } from "lucide-react";
+import { Package, AlertTriangle, TrendingUp, DollarSign, CreditCard } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +21,10 @@ export default async function DashboardPage() {
     return acc + (sellingPrice - costPrice) * item.quantity;
   }, 0);
 
+  const totalRevenue = completedOrderItems.reduce((acc, item) => {
+    return acc + Number(item.price) * item.quantity;
+  }, 0);
+
   // Mock data for the chart
   const chartData = [
     { week: "Week 1", products: 10 },
@@ -32,7 +36,7 @@ export default async function DashboardPage() {
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-purple-100 text-purple-600 rounded-lg">
@@ -77,6 +81,18 @@ export default async function DashboardPage() {
             <div>
               <p className="text-sm text-gray-500">Total Profit</p>
               <h3 className="text-2xl font-bold">₦{totalProfit.toFixed(2)}</h3>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-100 text-indigo-600 rounded-lg">
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Total Sales</p>
+              <h3 className="text-2xl font-bold">₦{totalRevenue.toFixed(2)}</h3>
             </div>
           </div>
         </div>
