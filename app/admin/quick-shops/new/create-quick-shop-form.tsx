@@ -11,6 +11,7 @@ export default function CreateQuickShopForm({ products }: { products: Product[] 
   const [name, setName] = useState("");
   const [selectedItems, setSelectedItems] = useState<{ productId: string; quantity: number }[]>([]);
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addItem = (productId: string) => {
     if (selectedItems.find((i) => i.productId === productId)) return;
@@ -36,10 +37,15 @@ export default function CreateQuickShopForm({ products }: { products: Product[] 
   };
 
   const handleSubmit = async () => {
-    if (!name || selectedItems.length === 0) return;
-    const res = await createQuickShop(name, selectedItems);
-    if (res.success) router.push("/admin/quick-shops");
-    else alert(res.message);
+    if (!name || selectedItems.length === 0 || isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const res = await createQuickShop(name, selectedItems);
+      if (res.success) router.push("/admin/quick-shops");
+      else alert(res.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -98,10 +104,10 @@ export default function CreateQuickShopForm({ products }: { products: Product[] 
       <div className="mt-8 flex justify-end">
         <button
           onClick={handleSubmit}
-          disabled={!name || selectedItems.length === 0}
+          disabled={!name || selectedItems.length === 0 || isSubmitting}
           className="bg-purple-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-purple-700 disabled:opacity-50"
         >
-          Create Quick Shop
+          {isSubmitting ? "Creating..." : "Create Quick Shop"}
         </button>
       </div>
     </div>

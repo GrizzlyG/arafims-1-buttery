@@ -5,7 +5,14 @@ import { finalizeQuickShop } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, AlertTriangle } from "lucide-react";
 
-export default function QuickShopActions({ quickShopId, items }: { quickShopId: string, items: any[] }) {
+type QuickShopItem = {
+  id: string;
+  productId: string;
+  quantity: number;
+  product: { name: string };
+};
+
+export default function QuickShopActions({ quickShopId, items }: { quickShopId: string, items: QuickShopItem[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [returns, setReturns] = useState<Record<string, number>>({});
   const router = useRouter();
