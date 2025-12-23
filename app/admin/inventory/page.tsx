@@ -24,6 +24,13 @@ export default async function InventoryPage() {
       return acc;
     }, 0);
 
+    const totalSales = product.orderItems.reduce((acc, item) => {
+      if (item.order.status === "complete") {
+        return acc + Number(item.price) * item.quantity;
+      }
+      return acc;
+    }, 0);
+
     return {
       id: product.id,
       name: product.name,
@@ -31,6 +38,7 @@ export default async function InventoryPage() {
       quantity: product.quantity,
       costPrice: Number(product.costPrice),
       totalProfit: totalProfit,
+      totalSales: totalSales,
       categoryName: product.category?.name || "Uncategorized",
     };
   });

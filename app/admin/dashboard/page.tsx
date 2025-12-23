@@ -80,7 +80,7 @@ export default async function DashboardPage() {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Profit</p>
-              <h3 className="text-2xl font-bold">₦{totalProfit.toFixed(2)}</h3>
+              <h3 className="text-2xl font-bold">₦{totalProfit.toLocaleString('en-US', { maximumFractionDigits: 0 })}</h3>
             </div>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default async function DashboardPage() {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Sales</p>
-              <h3 className="text-2xl font-bold">₦{totalRevenue.toFixed(2)}</h3>
+              <h3 className="text-2xl font-bold">₦{totalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}</h3>
             </div>
           </div>
         </div>

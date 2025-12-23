@@ -11,6 +11,7 @@ type ProductWithProfit = {
   quantity: number;
   costPrice: number;
   totalProfit: number;
+  totalSales: number;
   categoryName: string;
 };
 
@@ -80,6 +81,7 @@ export default function InventoryList({ products }: { products: ProductWithProfi
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Sales</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Profit</th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
@@ -103,6 +105,9 @@ export default function InventoryList({ products }: { products: ProductWithProfi
                   }`}>
                     {product.quantity}
                   </span>
+                </td>
+                <td className="px-6 py-4 text-gray-900 font-medium">
+                  ₦{product.totalSales.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 </td>
                 <td className="px-6 py-4 text-gray-900 font-medium">
                   ₦{product.totalProfit.toFixed(2)}
