@@ -11,15 +11,23 @@ const pacifico = Pacifico({ weight: "400", subsets: ["latin"] });
 type Product = {
   id: string;
   name: string;
-  price: number; // Converted from Decimal for client use
+  price: number;
   quantity: number;
+  categoryId?: string;
+  categoryName?: string;
 };
 
-export default function ShopInterface({ products }: { products: Product[] }) {
+type Category = {
+  id: string;
+  name: string;
+};
+
+export default function ShopInterface({ products, categories }: { products: Product[]; categories: Category[] }) {
   const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [orderResult, setOrderResult] = useState<{ success: boolean; orderId?: string; accessToken?: string } | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   const addToCart = (product: Product) => {
     setCart((prev) => {
@@ -116,26 +124,23 @@ export default function ShopInterface({ products }: { products: Product[] }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-gray-50 to-purple-50">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
+      <header className="bg-white/80 backdrop-blur shadow-none sticky top-0 z-10 border-b border-gray-100">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/shop">
-            <h1 className={`text-3xl text-purple-600 ${pacifico.className}`}>
-              Arafims <span className="text-purple-400">1</span> shop
-            </h1>
+            <h1 className={`text-2xl sm:text-3xl font-bold tracking-tight text-purple-700 ${pacifico.className}`}>Arafims <span className="text-purple-400">1</span> shop</h1>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/my-orders" className="text-sm font-medium text-gray-600 hover:text-purple-600">
-              My Orders
-            </Link>
+            <Link href="/my-orders" className="text-xs sm:text-sm font-medium text-gray-500 hover:text-purple-600 transition-colors">My Orders</Link>
             <button
               onClick={() => setIsCartOpen(!isCartOpen)}
-              className="relative p-2 hover:bg-gray-100 rounded-full"
+              className="relative p-2 bg-purple-50 hover:bg-purple-100 rounded-full transition-colors shadow-sm"
+              aria-label="Open cart"
             >
-              <ShoppingCart className="w-6 h-6 text-gray-700" />
+              <ShoppingCart className="w-6 h-6 text-purple-600" />
               {cart.length > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
                   {cart.reduce((a, b) => a + b.quantity, 0)}
                 </span>
               )}
@@ -144,98 +149,118 @@ export default function ShopInterface({ products }: { products: Product[] }) {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 flex gap-8 relative">
-        {/* Product Grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => {
-            const cartItem = cart.find((item) => item.product.id === product.id);
-            const currentQty = cartItem ? cartItem.quantity : 0;
-            const isMaxed = currentQty >= product.quantity;
-
-            return (
-              <div key={product.id} className="bg-white rounded-lg shadow p-4 flex flex-col">
-                <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                <p className="text-gray-500 text-sm mb-4">Available: {product.quantity}</p>
-                <div className="mt-auto flex items-center justify-between">
-                  <span className="text-lg font-bold">₦{product.price.toFixed(2)}</span>
-                  <button
-                    onClick={() => addToCart(product)}
-                    disabled={product.quantity <= 0 || isMaxed}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isMaxed ? "Max Limit" : "Add to Cart"}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+      <div className="container mx-auto px-4 py-8 flex flex-col gap-8 relative">
+        {/* Filter (responsive) */}
+        <div className="w-full mb-6">
+          <div className="bg-white/80 rounded-xl shadow-sm p-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <h4 className="font-semibold text-gray-700 mb-1 sm:mb-0 text-sm">Category</h4>
+            <select
+              className="flex-1 border border-gray-200 rounded-lg p-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">All</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Cart Sidebar */}
-        {isCartOpen && (
-          <div className="w-80 bg-white shadow-xl rounded-lg p-6 h-[calc(100vh-120px)] sticky top-24 flex flex-col">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-bold">Your Cart</h2>
-              <button onClick={() => setIsCartOpen(false)}>
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
+        {/* Product Grid */}
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {products
+            .filter((product) => !selectedCategory || product.categoryId === selectedCategory)
+            .map((product) => {
+              const cartItem = cart.find((item) => item.product.id === product.id);
+              const currentQty = cartItem ? cartItem.quantity : 0;
+              const isMaxed = currentQty >= product.quantity;
 
-            <div className="flex-1 overflow-y-auto space-y-4">
-              {cart.map((item) => (
-                <div key={item.product.id} className="flex justify-between items-center border-b pb-4">
-                  <div>
-                    <div className="font-medium">{item.product.name}</div>
-                    <div className="text-sm text-gray-500 mb-2">
-                      ₦{item.product.price.toFixed(2)}
-                    </div>
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1 w-fit">
-                      <button
-                        onClick={() => updateQuantity(item.product.id, -1)}
-                        className="p-1 hover:bg-white rounded-md shadow-sm transition-colors disabled:opacity-50"
-                        disabled={item.quantity <= 1}
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.product.id, 1)}
-                        className="p-1 hover:bg-white rounded-md shadow-sm transition-colors disabled:opacity-50"
-                        disabled={item.quantity >= item.product.quantity}
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <button onClick={() => removeFromCart(item.product.id)} className="text-gray-400 hover:text-red-500">
-                      <X className="w-4 h-4" />
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white/90 border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col gap-2 hover:shadow-lg transition-shadow min-h-[180px]"
+                >
+                  <h3 className="font-semibold text-base sm:text-lg text-gray-900 mb-1 truncate">{product.name}</h3>
+                  <p className="text-gray-400 text-xs mb-2">Available: {product.quantity}</p>
+                  <div className="mt-auto flex items-center justify-between gap-2">
+                    <span className="text-lg font-bold text-purple-700">₦{product.price.toFixed(2)}</span>
+                    <button
+                      onClick={() => addToCart(product)}
+                      disabled={product.quantity <= 0 || isMaxed}
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium text-xs sm:text-sm shadow hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isMaxed ? "Max Limit" : "Add to Cart"}
                     </button>
-                    <div className="font-medium">
-                      ₦{(item.product.price * item.quantity).toFixed(2)}
-                    </div>
                   </div>
                 </div>
-              ))}
-              {cart.length === 0 && <p className="text-gray-500 text-center py-4">Cart is empty</p>}
-            </div>
+              );
+            })}
+        </div>
 
-            <div className="border-t pt-4 mt-4">
-              <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded">
-                <strong>Note:</strong> After placing your order, we will check availability of items in your cart. <br />
-                <span className="block mt-1">Do <strong>not</strong> make payment until your order status changes to <span className="font-bold">&quot;awaiting payment confirmation&quot;</span>.</span>
-              </div>
-              <div className="flex justify-between text-lg font-bold mb-4">
-                <span>Total</span>
-                <span>₦{total.toFixed(2)}</span>
-              </div>
+        {/* Cart Sidebar as Overlay */}
+        {isCartOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <div className="w-full max-w-xs sm:max-w-sm bg-white shadow-2xl rounded-2xl p-6 h-[90vh] flex flex-col relative animate-fade-in">
               <button
-                onClick={handleCheckout}
-                disabled={cart.length === 0 || isCheckingOut}
-                className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50"
+                onClick={() => setIsCartOpen(false)}
+                className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
+                aria-label="Close cart"
               >
-                {isCheckingOut ? "Processing..." : "Checkout"}
+                <X className="w-6 h-6" />
               </button>
+              <h2 className="text-lg font-bold mb-6 text-center">Your Cart</h2>
+              <div className="flex-1 overflow-y-auto space-y-4">
+                {cart.map((item) => (
+                  <div key={item.product.id} className="flex justify-between items-center border-b pb-4">
+                    <div>
+                      <div className="font-medium">{item.product.name}</div>
+                      <div className="text-sm text-gray-500 mb-2">₦{item.product.price.toFixed(2)}</div>
+                      <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1 w-fit">
+                        <button
+                          onClick={() => updateQuantity(item.product.id, -1)}
+                          className="p-1 hover:bg-white rounded-md shadow-sm transition-colors disabled:opacity-50"
+                          disabled={item.quantity <= 1}
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="text-sm font-medium w-4 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.product.id, 1)}
+                          className="p-1 hover:bg-white rounded-md shadow-sm transition-colors disabled:opacity-50"
+                          disabled={item.quantity >= item.product.quantity}
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <button onClick={() => removeFromCart(item.product.id)} className="text-gray-400 hover:text-red-500">
+                        <X className="w-4 h-4" />
+                      </button>
+                      <div className="font-medium">₦{(item.product.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                  </div>
+                ))}
+                {cart.length === 0 && <p className="text-gray-500 text-center py-4">Cart is empty</p>}
+              </div>
+              <div className="border-t pt-4 mt-4">
+                <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded">
+                  <strong>Note:</strong> After placing your order, we will check availability of items in your cart. <br />
+                  <span className="block mt-1">Do <strong>not</strong> make payment until your order status changes to <span className="font-bold">&quot;awaiting payment confirmation&quot;</span>.</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold mb-4">
+                  <span>Total</span>
+                  <span>₦{total.toFixed(2)}</span>
+                </div>
+                <button
+                  onClick={handleCheckout}
+                  disabled={cart.length === 0 || isCheckingOut}
+                  className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50"
+                >
+                  {isCheckingOut ? "Processing..." : "Checkout"}
+                </button>
+              </div>
             </div>
           </div>
         )}
