@@ -90,7 +90,7 @@ model Product {
 
 model Order {
   id          String      @id
-  status      String      @default("awaiting payment confirmation")
+  status      String      @default("checking for availability")
   cancellationReason String?
   totalAmount Decimal     @db.Decimal(12, 2)
   createdAt   DateTime    @default(now())

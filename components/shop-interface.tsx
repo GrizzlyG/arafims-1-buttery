@@ -221,6 +221,10 @@ export default function ShopInterface({ products }: { products: Product[] }) {
             </div>
 
             <div className="border-t pt-4 mt-4">
+              <div className="mb-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded">
+                <strong>Note:</strong> After placing your order, we will check availability of items in your cart. <br />
+                <span className="block mt-1">Do <strong>not</strong> make payment until your order status changes to <span className="font-bold">&quot;awaiting payment confirmation&quot;</span>.</span>
+              </div>
               <div className="flex justify-between text-lg font-bold mb-4">
                 <span>Total</span>
                 <span>₦{total.toFixed(2)}</span>

@@ -32,6 +32,7 @@ export default function OrderStatusSelect({
       }}
       disabled={isPending}
     >
+      <option value="checking for availability">Checking for Availability</option>
       <option value="awaiting payment confirmation">Awaiting Payment</option>
       <option value="processing">Processing</option>
       <option value="complete">Complete</option>
