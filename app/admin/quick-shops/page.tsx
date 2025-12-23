@@ -32,9 +32,19 @@ export default async function QuickShopsPage() {
             className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow block"
           >
             <h2 className="text-xl font-bold mb-2">{shop.name}</h2>
-            <p className="text-gray-500 text-sm mb-4">
+            <p className="text-gray-500 text-sm mb-1">
               Created: {shop.createdAt.toLocaleDateString()}
             </p>
+            {shop.closedAt && (
+              <p className="text-gray-500 text-sm mb-1">Closed: {new Date(shop.closedAt).toLocaleDateString()}</p>
+            )}
+            <p className="text-gray-500 text-sm mb-1">Status: {shop.status}</p>
+            {shop.finalSales !== null && (
+              <p className="text-green-700 text-sm mb-1 font-bold">Final Sales: ₦{Number(shop.finalSales).toFixed(2)}</p>
+            )}
+            {shop.profit !== null && (
+              <p className="text-blue-700 text-sm mb-4 font-bold">Profit: ₦{Number(shop.profit).toFixed(2)}</p>
+            )}
             <div className="flex justify-between items-center">
               <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
                 {shop._count.items} Items

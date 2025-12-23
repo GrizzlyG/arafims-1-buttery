@@ -117,11 +117,15 @@ model Category {
 }
 
 model QuickShop {
-  id        String          @id @default(cuid())
-  name      String
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  items     QuickShopItem[]
+  id         String          @id @default(cuid())
+  name       String
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  closedAt   DateTime?
+  finalSales Decimal?        @db.Decimal(12,2)
+  profit     Decimal?        @db.Decimal(12,2)
+  status     String          @default("open")
+  items      QuickShopItem[]
 }
 
 model QuickShopItem {

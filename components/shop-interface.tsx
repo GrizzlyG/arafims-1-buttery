@@ -154,9 +154,6 @@ export default function ShopInterface({ products }: { products: Product[] }) {
 
             return (
               <div key={product.id} className="bg-white rounded-lg shadow p-4 flex flex-col">
-                <div className="h-40 bg-gray-100 rounded-md mb-4 flex items-center justify-center text-gray-400">
-                  No Image
-                </div>
                 <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
                 <p className="text-gray-500 text-sm mb-4">Available: {product.quantity}</p>
                 <div className="mt-auto flex items-center justify-between">

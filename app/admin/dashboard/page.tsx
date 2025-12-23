@@ -16,7 +16,7 @@ export default async function DashboardPage() {
   ]);
 
   const totalProfit = completedOrderItems.reduce((acc, item) => {
-    const costPrice = Number(item.product.costPrice);
+    const costPrice = item.product ? Number(item.product.costPrice) : 0;
     const sellingPrice = Number(item.price);
     return acc + (sellingPrice - costPrice) * item.quantity;
   }, 0);

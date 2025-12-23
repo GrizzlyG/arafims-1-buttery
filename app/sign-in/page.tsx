@@ -45,13 +45,13 @@ export default async function SignInPage(props: { searchParams: Promise<{ error?
           >
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input name="email" type="email" required className="w-full border rounded-lg p-2" />
+              <input name="email" type="email" required className="w-full border rounded-lg p-2" suppressHydrationWarning />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input name="password" type="password" required className="w-full border rounded-lg p-2" />
+              <input name="password" type="password" required className="w-full border rounded-lg p-2" suppressHydrationWarning />
             </div>
-            <button className="w-full bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-all font-medium">
+            <button className="w-full bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-all font-medium" suppressHydrationWarning>
               Sign in with Credentials
             </button>
           </form>

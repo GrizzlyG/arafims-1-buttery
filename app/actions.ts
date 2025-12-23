@@ -373,8 +373,23 @@ export async function finalizeQuickShop(quickShopId: string, returnedItems: Reco
         });
       }
 
-      // Delete the quick shop
-      await tx.quickShop.delete({ where: { id: quickShopId } });
+      // Calculate final sales and profit
+      const finalSales = totalAmount;
+      const profit = quickShop.items.reduce((sum, item) => {
+        const returnedQty = returnedItems[item.productId] || 0;
+        const soldQty = item.quantity - returnedQty;
+        return sum + (Number(item.price) - Number(item.costPrice)) * soldQty;
+      }, 0);
+
+      await tx.quickShop.update({
+        where: { id: quickShopId },
+        data: {
+          closedAt: new Date(),
+          finalSales,
+          profit,
+          status: "closed",
+        },
+      });
     });
 
     revalidatePath("/admin/quick-shops");

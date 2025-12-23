@@ -69,7 +69,7 @@ export default function Sidebar({ user }: { user: UserSession }) {
               <p className="text-xs text-gray-400 truncate max-w-[100px]">{user?.email}</p>
             </div>
           </div>
-          <button onClick={() => handleSignOut()} className="text-gray-400 hover:text-white">
+          <button onClick={() => handleSignOut()} className="text-gray-400 hover:text-white" suppressHydrationWarning>
             <LogOut className="w-5 h-5" />
           </button>
         </div>

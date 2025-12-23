@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function QuickShopDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+
   const quickShop = await prisma.quickShop.findUnique({
     where: { id },
     include: { items: { include: { product: true } } },
@@ -17,17 +18,6 @@ export default async function QuickShopDetailPage({ params }: { params: Promise<
   const totalCost = quickShop.items.reduce((sum, item) => sum + Number(item.costPrice) * item.quantity, 0);
   const totalRevenue = quickShop.items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
   const totalProfit = totalRevenue - totalCost;
-
-  const formattedItems = quickShop.items.map((item) => ({
-    ...item,
-    price: Number(item.price),
-    costPrice: Number(item.costPrice),
-    product: {
-      ...item.product,
-      price: Number(item.product.price),
-      costPrice: Number(item.product.costPrice),
-    },
-  }));
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -42,7 +32,7 @@ export default async function QuickShopDetailPage({ params }: { params: Promise<
           >
             <Printer className="w-4 h-4" /> Print Manifest
           </button>
-          <QuickShopActions quickShopId={quickShop.id} items={formattedItems} />
+          <QuickShopActions quickShopId={quickShop.id} items={quickShop.items} />
         </div>
       </div>
 
@@ -66,16 +56,16 @@ export default async function QuickShopDetailPage({ params }: { params: Promise<
             {quickShop.items.map((item) => (
               <tr key={item.id}>
                 <td className="py-3">{item.product.name}</td>
-                <td className="py-3 text-right">₦{Number(item.price).toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
+                <td className="py-3 text-right">₦{Number(item.price).toFixed(2)}</td>
                 <td className="py-3 text-center">{item.quantity}</td>
-                <td className="py-3 text-right font-medium">₦{(Number(item.price) * item.quantity).toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
+                <td className="py-3 text-right font-medium">₦{(Number(item.price) * item.quantity).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-gray-200">
               <td colSpan={3} className="py-4 text-right font-bold text-lg">Total Revenue Potential:</td>
-              <td className="py-4 text-right font-bold text-lg">₦{totalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
+              <td className="py-4 text-right font-bold text-lg">₦{totalRevenue.toFixed(2)}</td>
             </tr>
           </tfoot>
         </table>
@@ -85,12 +75,12 @@ export default async function QuickShopDetailPage({ params }: { params: Promise<
           <h3 className="font-bold text-gray-900 mb-2">Admin Insights</h3>
           <div className="flex gap-8">
             <div>
-              <span className="text-sm text-gray-500 block">Total Price</span>
-              <span className="font-mono font-medium">₦{totalRevenue.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+              <span className="text-sm text-gray-500 block">Total Cost</span>
+              <span className="font-mono font-medium">₦{totalCost.toFixed(2)}</span>
             </div>
             <div>
               <span className="text-sm text-gray-500 block">Projected Profit</span>
-              <span className="font-mono font-bold text-green-600">₦{totalProfit.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+              <span className="font-mono font-bold text-green-600">₦{totalProfit.toFixed(2)}</span>
             </div>
           </div>
         </div>
