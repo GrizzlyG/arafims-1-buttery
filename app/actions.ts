@@ -1,3 +1,4 @@
+
 "use server";
 
 import { prisma } from "@/lib/prisma";
@@ -5,6 +6,48 @@ import { revalidatePath } from "next/cache";
 import { auth, signOut } from "@/auth";
 import { cookies } from "next/headers";
 import { z } from "zod";
+
+type UpdateProductInput = {
+  name: string;
+  price: number;
+  costPrice: number;
+  quantity: number;
+  categoryId: string;
+};
+
+export async function updateProduct(id: string, data: UpdateProductInput): Promise<{ success: boolean; message?: string }> {
+  const session = await auth();
+  if (!session?.user) return { success: false, message: "Unauthorized" };
+
+  const ProductSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    price: z.coerce.number().positive("Selling price must be positive"),
+    costPrice: z.coerce.number().nonnegative("Cost price must be non-negative"),
+    quantity: z.coerce.number().int().nonnegative("Quantity must be a whole number"),
+    categoryId: z.string().optional().nullable(),
+  });
+
+  const parsed = ProductSchema.safeParse(data);
+  if (!parsed.success) {
+    return { success: false, message: "Validation failed. Please check your inputs." };
+  }
+
+  try {
+    await prisma.product.update({
+      where: { id },
+      data: {
+        ...parsed.data,
+        categoryId: parsed.data.categoryId || null,
+      },
+    });
+    revalidatePath("/admin/inventory");
+    revalidatePath("/shop");
+    return { success: true };
+  } catch (e) {
+    console.error(e);
+    return { success: false, message: "Failed to update product" };
+  }
+}
 
 const ADJECTIVES = ["bubble", "shiny", "happy", "noisy", "calm", "swift", "brave", "gentle", "cosmic", "dusty"];
 const COLORS = ["cobalt", "red", "blue", "green", "yellow", "purple", "orange", "silver", "azure", "crimson"];

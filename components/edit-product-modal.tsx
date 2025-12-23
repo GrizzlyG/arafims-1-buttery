@@ -2,8 +2,37 @@
 
 import { useState } from "react";
 
-export default function EditProductModal({ product, categories, onSave, onClose }) {
-  const [form, setForm] = useState({
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  costPrice: number;
+  quantity: number;
+  categoryId?: string;
+};
+
+type Category = {
+  id: string;
+  name: string;
+};
+
+type EditProductForm = {
+  name: string;
+  price: number;
+  costPrice: number;
+  quantity: number;
+  categoryId: string;
+};
+
+type EditProductModalProps = {
+  product: Product;
+  categories: Category[];
+  onSave: (form: EditProductForm) => Promise<{ success: boolean; message?: string }>;
+  onClose: () => void;
+};
+
+export default function EditProductModal({ product, categories, onSave, onClose }: EditProductModalProps) {
+  const [form, setForm] = useState<EditProductForm>({
     name: product.name,
     price: product.price,
     costPrice: product.costPrice,
@@ -13,11 +42,11 @@ export default function EditProductModal({ product, categories, onSave, onClose 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");

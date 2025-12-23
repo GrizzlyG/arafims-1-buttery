@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Trash2, Printer, Pencil } from "lucide-react";
 import { deleteProduct } from "@/app/actions";
-import { updateProduct } from "@/lib/actions/products";
+import { updateProduct } from "@/app/actions";
 import EditProductModal from "./edit-product-modal";
 
 type ProductWithProfit = {
@@ -18,10 +18,19 @@ type ProductWithProfit = {
   categoryId?: string;
 };
 
+type Category = { id: string; name: string };
+type EditProductForm = {
+  name: string;
+  price: number;
+  costPrice: number;
+  quantity: number;
+  categoryId: string;
+};
+
 export default function InventoryList({ products }: { products: ProductWithProfit[] }) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editingProduct, setEditingProduct] = useState<ProductWithProfit | null>(null);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const toggleSelect = (id: string) => {
     const newSelected = new Set(selectedIds);
@@ -60,7 +69,7 @@ export default function InventoryList({ products }: { products: ProductWithProfi
     if (categories.length === 0) {
       const res = await fetch("/api/categories");
       if (res.ok) {
-        const data = await res.json();
+        const data: Category[] = await res.json();
         setCategories(data);
       }
     }
@@ -71,7 +80,7 @@ export default function InventoryList({ products }: { products: ProductWithProfi
     setEditingProduct(product);
   };
 
-  const handleSave = async (form: any) => {
+  const handleSave = async (form: EditProductForm) => {
     return await updateProduct(editingProduct!.id, form);
   };
 
