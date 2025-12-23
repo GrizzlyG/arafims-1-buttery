@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, Printer } from "lucide-react";
+import { Trash2, Printer, Pencil } from "lucide-react";
 import { deleteProduct } from "@/app/actions";
+import { updateProduct } from "@/lib/actions/products";
+import EditProductModal from "./edit-product-modal";
 
 type ProductWithProfit = {
   id: string;
@@ -13,10 +15,13 @@ type ProductWithProfit = {
   totalProfit: number;
   totalSales: number;
   categoryName: string;
+  categoryId?: string;
 };
 
 export default function InventoryList({ products }: { products: ProductWithProfit[] }) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [editingProduct, setEditingProduct] = useState<ProductWithProfit | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
 
   const toggleSelect = (id: string) => {
     const newSelected = new Set(selectedIds);
@@ -49,6 +54,28 @@ export default function InventoryList({ products }: { products: ProductWithProfi
     acc[category].push(product);
     return acc;
   }, {} as Record<string, ProductWithProfit[]>);
+
+  // Fetch categories only when editing
+  async function fetchCategories() {
+    if (categories.length === 0) {
+      const res = await fetch("/api/categories");
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data);
+      }
+    }
+  }
+
+  const handleEdit = async (product: ProductWithProfit) => {
+    await fetchCategories();
+    setEditingProduct(product);
+  };
+
+  const handleSave = async (form: any) => {
+    return await updateProduct(editingProduct!.id, form);
+  };
+
+  const handleClose = () => setEditingProduct(null);
 
   return (
     <div>
@@ -112,7 +139,14 @@ export default function InventoryList({ products }: { products: ProductWithProfi
                 <td className="px-6 py-4 text-gray-900 font-medium">
                   ₦{product.totalProfit.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 text-right">
+                <td className="px-6 py-4 text-right flex gap-2 justify-end">
+                  <button
+                    onClick={() => handleEdit(product)}
+                    className="text-blue-500 hover:text-blue-700"
+                    title="Edit"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
                   <button
                     onClick={async () => {
                         if(confirm('Are you sure you want to delete this product?')) {
@@ -120,6 +154,7 @@ export default function InventoryList({ products }: { products: ProductWithProfi
                         }
                     }}
                     className="text-red-500 hover:text-red-700"
+                    title="Delete"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -131,6 +166,14 @@ export default function InventoryList({ products }: { products: ProductWithProfi
       </div>
 
       {/* Print Table (Hidden on screen, visible on print) */}
+      {editingProduct && (
+        <EditProductModal
+          product={editingProduct}
+          categories={categories}
+          onSave={handleSave}
+          onClose={handleClose}
+        />
+      )}
       <div className="hidden print:block">
         <h1 className="text-2xl font-bold mb-4">Inventory List</h1>
         {Object.entries(groupedProducts).map(([category, items]) => (
